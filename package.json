@@ -1,0 +1,20 @@
+{
+  "name": "takjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:watch": "tsc -w",
+    "start": "nodemon lib/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/core-js": "^0.9.35",
+    "nodemon": "^1.11.0",
+    "typescript": "^2.2.1"
+  },
+  "dependencies": {
+    "rxjs": "^5.2.0"
+  }
+}
