@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { Piece } from './piece';
 
 export enum Player {
@@ -30,13 +29,3 @@ export interface Movement {
     col: number;
     data: DropMovementData | MoveMovementData;
 }
-
-export const createMoves = (nextWhiteMove$: Observable<Movement>, nextBlackMove$: Observable<Movement>): Observable<Movement> => {
-    let whiteMoves$ = nextWhiteMove$
-        .filter(movement => movement.player === Player.white);
-
-    let blackMoves$ = nextBlackMove$
-        .filter(movement => movement.player === Player.black);
-
-    return whiteMoves$.merge(blackMoves$);
-};

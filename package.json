@@ -5,14 +5,17 @@
   "main": "index.js",
   "scripts": {
     "lint": "tslint lib/**/*.ts",
+    "prebuild": "yarn run lint",
+    "build": "tsc",
     "build:watch": "tsc -w",
-    "start": "nodemon lib/index.js"
+    "test": "ava",
+    "test:watch": "ava --watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/core-js": "^0.9.35",
-    "nodemon": "^1.11.0",
+    "ava": "^0.18.2",
     "tslint": "^4.5.1",
     "typescript": "^2.2.1"
   },

@@ -1,6 +1,8 @@
 import { Board } from './board';
 
+import { Player } from './movement';
+
 export interface Game {
-    finished: boolean;
+    turn: Player;
     board: Board;
 }

@@ -1,35 +1,38 @@
 import { Observable, Subject } from 'rxjs';
 
 import { Game } from './game';
-import { Movement, createMoves } from './movement';
-import { Board, isValidMovement, createInitialBoard, applyMovement } from './board';
+import { Player, Movement } from './movement';
+import { Board, isValidMovement, createBoard, applyMovement } from './board';
 
-export const createTakGame = () => {
-    const nextWhiteMove$: Subject<Movement> = new Subject<Movement>();
-    const nextBlackMove$: Subject<Movement> = new Subject<Movement>();
+export const createGame = (size: number = 4, initialGame: Game = null) => {
+  const nextWhiteMove$: Subject<Movement> = new Subject<Movement>();
+  const nextBlackMove$: Subject<Movement> = new Subject<Movement>();
 
-    const moves$: Observable<Movement> = createMoves(nextWhiteMove$, nextBlackMove$);
-    const initialBoard: Board = createInitialBoard();
+  const initialBoard: Board = createBoard(size);
 
-    const board$: Observable<Board> = moves$
-        .scan((board: Board, movement: Movement): Board => {
-            if (isValidMovement(board, movement)) {
-                return applyMovement(board, movement);
-            }
-            return board;
-        }, initialBoard)
-        .startWith(initialBoard);
+  initialGame = initialGame || { turn: Player.white, board: initialBoard };
 
-    const game$: Observable<Game> = board$.scan((game, board) => {
-        return {
-            ...game,
-            board
-        };
-    }, { finished: false });
+  const game$: Observable<Game> = nextWhiteMove$
+    .filter(movement => movement.player === Player.white)
+    .merge(nextBlackMove$.filter(movement => movement.player === Player.black))
+    .scan((game: Game, movement: Movement) => {
+      const { turn } = game;
+      let { board } = game;
 
-    return {
-        game$,
-        nextWhiteMove$,
-        nextBlackMove$
-    };
+      if (turn === movement.player && isValidMovement(board, movement)) {
+        board = applyMovement(board, movement);
+      }
+
+      return {
+        ...game,
+        board
+      };
+    }, initialGame)
+    .startWith(initialGame);
+
+  return {
+    game$,
+    nextWhiteMove$,
+    nextBlackMove$
+  };
 };
