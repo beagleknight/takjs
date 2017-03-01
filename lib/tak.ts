@@ -1,7 +1,7 @@
 import { Observable, Subject } from 'rxjs';
 
 import { Game } from './game';
-import { Movement, Player, createMoves } from './movement';
+import { Movement, createMoves } from './movement';
 import { Board, isValidMovement, createInitialBoard, applyMovement } from './board';
 
 export const createTakGame = () => {
@@ -31,5 +31,5 @@ export const createTakGame = () => {
         game$,
         nextWhiteMove$,
         nextBlackMove$
-    }
-}
+    };
+};

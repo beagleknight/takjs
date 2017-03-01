@@ -6,6 +6,6 @@ export enum PieceType {
 }
 
 export interface Piece {
-    color: Player,
-    type: PieceType
+    color: Player;
+    type: PieceType;
 }

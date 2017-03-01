@@ -39,4 +39,4 @@ export const createMoves = (nextWhiteMove$: Observable<Movement>, nextBlackMove$
         .filter(movement => movement.player === Player.black);
 
     return whiteMoves$.merge(blackMoves$);
-}
+};

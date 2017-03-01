@@ -1,4 +1,4 @@
-import { Movement, Player, MovementType, DropMovementData, MoveMovementData } from './movement'
+import { Movement, Player, MovementType, DropMovementData, MoveMovementData } from './movement';
 import { Piece, PieceType } from './piece';
 
 interface Stack {
@@ -93,7 +93,7 @@ const replaceCell = (board: Board, row: number, col: number, stack: Stack) => {
         ...board.cells[row].slice(0, col),
         stack,
         ...board.cells[row].slice(col + 1)
-    ]
+    ];
 
     return [
         ...board.cells.slice(0, row),
@@ -111,7 +111,7 @@ export const createInitialBoard = (): Board => {
             [{ pieces: [] }, { pieces: [] }, { pieces: [] }],
             [{ pieces: [] }, { pieces: [] }, { pieces: [] }]
         ]
-    }
+    };
 };
 
 export const printBoard = (board: Board) => {
