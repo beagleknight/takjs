@@ -1,10 +1,11 @@
 {
   "name": "takjs",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.2",
+  "description": "A UI-agnostic implementation of the game Tak using Typescript and RxJS",
+  "main": "dist/src/index.js",
+  "typings":  "dist/src/index.d.ts",
   "scripts": {
-    "lint": "tslint lib/**/*.ts",
+    "lint": "tslint src/**/*.ts",
     "prebuild": "yarn run lint",
     "build": "tsc",
     "build:watch": "tsc -w",
@@ -12,7 +13,7 @@
     "test:watch": "ava --watch",
     "test:debug": "inspect node_modules/ava/profile.js"
   },
-  "author": "",
+  "author": "David Morcillo Muñoz <david.morcillo@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/core-js": "^0.9.35",
