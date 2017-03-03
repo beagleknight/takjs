@@ -12,8 +12,7 @@
     "build:watch": "tsc -w",
     "test": "ava",
     "test:watch": "ava --watch",
-    "test:debug": "inspect node_modules/ava/profile.js",
-    "prepublish": "yarn build && yarn test"
+    "test:debug": "inspect node_modules/ava/profile.js"
   },
   "files": [
     "*.js",
