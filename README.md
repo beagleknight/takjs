@@ -16,6 +16,14 @@ TakJS is available as an NPM package. You can install TakJS in your project's di
 $ yarn add takjs
 ```
 
+## Usage
+
+Coming soon...
+
+## Examples
+
+Coming soon...
+
 ## Contributing
 
 Contributions are welcome and appreciated. You can find TakJS on GitHub, feel free to start an issue or create a pull requests:<br />
