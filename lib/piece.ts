@@ -1,4 +1,4 @@
-import { Player } from './movement';
+import { Player } from './action';
 
 export enum PieceType {
     flat,

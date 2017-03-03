@@ -5,16 +5,16 @@ export enum Player {
     black
 }
 
-export enum MovementType {
+export enum ActionType {
     drop,
     move
 }
 
-export interface DropMovementData {
+export interface DropActionData {
     piece: Piece;
 }
 
-export interface MoveMovementData {
+export interface MoveActionData {
     pieces: number;
     to: {
         row: number;
@@ -22,10 +22,10 @@ export interface MoveMovementData {
     };
 }
 
-export interface Movement {
+export interface Action {
     player: Player;
-    type: MovementType;
+    type: ActionType;
     row: number;
     col: number;
-    data: DropMovementData | MoveMovementData;
+    data: DropActionData | MoveActionData;
 }

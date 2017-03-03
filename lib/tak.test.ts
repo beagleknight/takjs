@@ -2,7 +2,7 @@ import test from 'ava';
 
 import { createGame } from './tak';
 import { boardStr, boardToText, boardFromText } from './board';
-import { Player, MovementType } from './movement';
+import { Player, ActionType } from './action';
 import { PieceType } from './piece';
 
 test("createGame with default arguments creates a game of size 4", t => {
@@ -66,7 +66,7 @@ test("white player can drop a piece on a empty space", t => {
 
   nextWhiteMove$.next({
     player: Player.white,
-    type: MovementType.drop,
+    type: ActionType.drop,
     row: 1,
     col: 2,
     data: {
@@ -92,7 +92,7 @@ test("black player cannot start the game", t => {
 
   nextBlackMove$.next({
     player: Player.black,
-    type: MovementType.drop,
+    type: ActionType.drop,
     row: 1,
     col: 2,
     data: {

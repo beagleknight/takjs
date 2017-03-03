@@ -1,26 +1,26 @@
 import { Observable, Subject } from 'rxjs';
 
 import { Game } from './game';
-import { Player, Movement } from './movement';
-import { Board, isValidMovement, createBoard, applyMovement } from './board';
+import { Player, Action } from './action';
+import { Board, isValidAction, createBoard, applyAction } from './board';
 
 export const createGame = (size: number = 4, initialGame: Game = null) => {
-  const nextWhiteMove$: Subject<Movement> = new Subject<Movement>();
-  const nextBlackMove$: Subject<Movement> = new Subject<Movement>();
+  const nextWhiteMove$: Subject<Action> = new Subject<Action>();
+  const nextBlackMove$: Subject<Action> = new Subject<Action>();
 
   const initialBoard: Board = createBoard(size);
 
   initialGame = initialGame || { turn: Player.white, board: initialBoard };
 
   const game$: Observable<Game> = nextWhiteMove$
-    .filter(movement => movement.player === Player.white)
-    .merge(nextBlackMove$.filter(movement => movement.player === Player.black))
-    .scan((game: Game, movement: Movement) => {
+    .filter(action => action.player === Player.white)
+    .merge(nextBlackMove$.filter(action => action.player === Player.black))
+    .scan((game: Game, action: Action) => {
       const { turn } = game;
       let { board } = game;
 
-      if (turn === movement.player && isValidMovement(board, movement)) {
-        board = applyMovement(board, movement);
+      if (turn === action.player && isValidAction(board, action)) {
+        board = applyAction(board, action);
       }
 
       return {

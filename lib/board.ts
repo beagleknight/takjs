@@ -1,4 +1,4 @@
-import { Movement, Player, MovementType, DropMovementData, MoveMovementData } from './movement';
+import { Action, Player, ActionType, DropActionData, MoveActionData } from './action';
 import { Piece, PieceType } from './piece';
 
 interface Stack {
@@ -10,45 +10,45 @@ export interface Board {
   cells: Stack[][];
 }
 
-export const isValidMovement = (board: Board, movement: Movement): boolean => {
-  switch (movement.type) {
-    case MovementType.drop:
-      return isValidDropMovement(board, movement);
-    case MovementType.move:
-      return isValidMoveMovement(board, movement);
+export const isValidAction = (board: Board, action: Action): boolean => {
+  switch (action.type) {
+    case ActionType.drop:
+      return isValidDropAction(board, action);
+    case ActionType.move:
+      return isValidMoveAction(board, action);
     default:
       return false;
   }
 };
 
-const isValidDropMovement = (board: Board, movement: Movement): boolean => {
-  let { row, col } = movement;
+const isValidDropAction = (board: Board, action: Action): boolean => {
+  let { row, col } = action;
   let stack: Stack = board.cells[row][col];
 
   return stack.pieces.length === 0;
 };
 
-const isValidMoveMovement = (board: Board, movement: Movement): boolean => {
-  let { row, col } = movement;
+const isValidMoveAction = (board: Board, action: Action): boolean => {
+  let { row, col } = action;
   let stack: Stack = board.cells[row][col];
 
-  return stack.pieces.length > 0 && stack.pieces[0].color === movement.player;
+  return stack.pieces.length > 0 && stack.pieces[0].color === action.player;
 };
 
-export const applyMovement = (board: Board, movement: Movement): Board => {
-  switch (movement.type) {
-    case MovementType.drop:
-      return applyDropMovement(board, movement);
-    case MovementType.move:
-      return applyMoveMovement(board, movement);
+export const applyAction = (board: Board, action: Action): Board => {
+  switch (action.type) {
+    case ActionType.drop:
+      return applyDropAction(board, action);
+    case ActionType.move:
+      return applyMoveAction(board, action);
     default:
       return board;
   }
 };
 
-const applyDropMovement = (board: Board, movement: Movement): Board => {
-  const { row, col, data } = movement;
-  const { piece } = data as DropMovementData;
+const applyDropAction = (board: Board, action: Action): Board => {
+  const { row, col, data } = action;
+  const { piece } = data as DropActionData;
   const stack: Stack = board.cells[row][col];
 
   return {
@@ -62,9 +62,9 @@ const applyDropMovement = (board: Board, movement: Movement): Board => {
   };
 };
 
-const applyMoveMovement = (board: Board, movement: Movement): Board => {
-  const { row, col, data } = movement;
-  const { pieces, to } = data as MoveMovementData;
+const applyMoveAction = (board: Board, action: Action): Board => {
+  const { row, col, data } = action;
+  const { pieces, to } = data as MoveActionData;
   const stack: Stack = board.cells[row][col];
 
   let movePieces = stack.pieces.slice(0, pieces);
