@@ -62,7 +62,7 @@ test("createGame starts with an empty board", t => {
 });
 
 test("a player's action modify the game's board", t => {
-  const { game$, nextWhiteMove$ } = createGame();
+  const { game$, nextWhiteAction$ } = createGame();
 
   game$.skip(1).subscribe(({ board }) => {
     t.is(boardToText(board), boardStr`
@@ -73,7 +73,7 @@ test("a player's action modify the game's board", t => {
     `);
   });
 
-  nextWhiteMove$.next({
+  nextWhiteAction$.next({
     player: PlayerColor.white,
     type: ActionType.drop,
     row: 1,
@@ -88,13 +88,13 @@ test("a player's action modify the game's board", t => {
 });
 
 test("a player's drop action change the game's turn", t => {
-  const { game$, nextWhiteMove$ } = createGame();
+  const { game$, nextWhiteAction$ } = createGame();
 
   game$.skip(1).subscribe(({ turn }) => {
     t.is(turn, PlayerColor.black);
   });
 
-  nextWhiteMove$.next({
+  nextWhiteAction$.next({
     player: PlayerColor.white,
     type: ActionType.drop,
     row: 1,
@@ -115,7 +115,7 @@ test("a player's move action doesn't change the game's turn if current player ha
     E,E,E,E
     E,E,E,E
   `;
-  const { nextWhiteMove$, game$ } = createGame(4, {
+  const { nextWhiteAction$, game$ } = createGame(4, {
     turn: PlayerColor.white,
     board: startedGameBoard,
     whitePlayer: {
@@ -144,7 +144,7 @@ test("a player's move action doesn't change the game's turn if current player ha
     t.is(turn, PlayerColor.white);
   });
 
-  nextWhiteMove$.next({
+  nextWhiteAction$.next({
     player: PlayerColor.white,
     type: ActionType.move,
     row: 1,
@@ -167,7 +167,7 @@ test("a player's move action change the game's turn if current player doesn't ha
     E,E,E,E
     E,E,E,E
   `;
-  const { nextWhiteMove$, game$ } = createGame(4, {
+  const { nextWhiteAction$, game$ } = createGame(4, {
     turn: PlayerColor.white,
     board: startedGameBoard,
     whitePlayer: {
@@ -196,7 +196,7 @@ test("a player's move action change the game's turn if current player doesn't ha
     t.is(turn, PlayerColor.black);
   });
 
-  nextWhiteMove$.next({
+  nextWhiteAction$.next({
     player: PlayerColor.white,
     type: ActionType.move,
     data: {
@@ -210,7 +210,7 @@ test("a player's move action change the game's turn if current player doesn't ha
 });
 
 test("a player cannot do an action if it's not his turn", t => {
-  const { game$, nextBlackMove$ } = createGame();
+  const { game$, nextBlackAction$ } = createGame();
 
   game$.skip(1).subscribe(({ board }) => {
     t.is(boardToText(board), boardStr`
@@ -221,7 +221,7 @@ test("a player cannot do an action if it's not his turn", t => {
     `);
   });
 
-  nextBlackMove$.next({
+  nextBlackAction$.next({
     player: PlayerColor.black,
     type: ActionType.drop,
     row: 1,

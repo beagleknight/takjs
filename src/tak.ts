@@ -6,8 +6,8 @@ import { Action, ActionType } from './action';
 import { Board, isValidAction, createBoard, applyAction } from './board';
 
 export const createGame = (size: number = 4, initialGame: Game = null) => {
-  const nextWhiteMove$: Subject<Action> = new Subject<Action>();
-  const nextBlackMove$: Subject<Action> = new Subject<Action>();
+  const nextWhiteAction$: Subject<Action> = new Subject<Action>();
+  const nextBlackAction$: Subject<Action> = new Subject<Action>();
 
   const initialBoard: Board = createBoard(size);
 
@@ -24,9 +24,9 @@ export const createGame = (size: number = 4, initialGame: Game = null) => {
     }
   };
 
-  const game$: Observable<Game> = nextWhiteMove$
+  const game$: Observable<Game> = nextWhiteAction$
     .filter(action => action.player === PlayerColor.white)
-    .merge(nextBlackMove$.filter(action => action.player === PlayerColor.black))
+    .merge(nextBlackAction$.filter(action => action.player === PlayerColor.black))
     .scan((game: Game, action: Action) => {
       let { board, turn, whitePlayer, blackPlayer } = game;
       const { piecesInHand } = turn === PlayerColor.white ? whitePlayer : blackPlayer;
@@ -71,7 +71,7 @@ export const createGame = (size: number = 4, initialGame: Game = null) => {
 
   return {
     game$,
-    nextWhiteMove$,
-    nextBlackMove$
+    nextWhiteAction$,
+    nextBlackAction$
   };
 };
