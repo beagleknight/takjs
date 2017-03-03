@@ -1,6 +1,6 @@
 {
   "name": "takjs",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A UI-agnostic implementation of the game Tak using Typescript and RxJS",
   "main": "index.js",
   "typings": "index.d.ts",
