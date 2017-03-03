@@ -1,11 +1,20 @@
-import { Player } from './action';
+import { PlayerColor } from './player';
+import { Stack } from './board';
 
 export enum PieceType {
-    flat,
-    standing
+  flat,
+  standing
 }
 
 export interface Piece {
-    color: Player;
-    type: PieceType;
+  color: PlayerColor;
+  type: PieceType;
+}
+
+export interface PiecesInHand {
+  stack: Stack;
+  to: {
+    row: number;
+    col: number;
+  }
 }

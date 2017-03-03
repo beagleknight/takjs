@@ -1,31 +1,34 @@
-import { Piece } from './piece';
-
-export enum Player {
-    white,
-    black
-}
+import { Piece, PiecesInHand } from './piece';
+import { PlayerColor } from './player';
+import { Board } from './board';
 
 export enum ActionType {
-    drop,
-    move
+  drop,
+  move
 }
 
 export interface DropActionData {
-    piece: Piece;
+  piece: Piece;
 }
 
 export interface MoveActionData {
-    pieces: number;
-    to: {
-        row: number;
-        col: number;
-    };
+  piecesGrabbed?: number;
+  to: {
+    row: number;
+    col: number;
+    piecesToDrop: number;
+  };
 }
 
 export interface Action {
-    player: Player;
-    type: ActionType;
-    row: number;
-    col: number;
-    data: DropActionData | MoveActionData;
+  player: PlayerColor;
+  type: ActionType;
+  row?: number;
+  col?: number;
+  data: DropActionData | MoveActionData;
+}
+
+export interface ActionResult {
+  board: Board;
+  piecesInHand?: PiecesInHand;
 }

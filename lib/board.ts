@@ -1,7 +1,8 @@
-import { Action, Player, ActionType, DropActionData, MoveActionData } from './action';
-import { Piece, PieceType } from './piece';
+import { PlayerColor } from './player';
+import { Action, ActionType, DropActionData, MoveActionData, ActionResult } from './action';
+import { Piece, PieceType, PiecesInHand } from './piece';
 
-interface Stack {
+export interface Stack {
   pieces: Piece[];
 }
 
@@ -10,12 +11,12 @@ export interface Board {
   cells: Stack[][];
 }
 
-export const isValidAction = (board: Board, action: Action): boolean => {
+export const isValidAction = (board: Board, action: Action, piecesInHand: PiecesInHand = null): boolean => {
   switch (action.type) {
     case ActionType.drop:
       return isValidDropAction(board, action);
     case ActionType.move:
-      return isValidMoveAction(board, action);
+      return isValidMoveAction(board, action, piecesInHand);
     default:
       return false;
   }
@@ -29,64 +30,104 @@ const isValidDropAction = (board: Board, action: Action): boolean => {
   return stack.pieces.length === 0 && action.player === piece.color;
 };
 
-const isValidMoveAction = (board: Board, action: Action): boolean => {
+const isValidMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHand = null): boolean => {
+  let { size } = board;
   let { row, col, data } = action;
-  let { to } = data as MoveActionData;
-  let stack: Stack = board.cells[row][col];
-  let dist = Math.abs(to.row - row) + Math.abs(to.col - col);
+  let { piecesGrabbed, to } = data as MoveActionData;
 
-  return stack.pieces.length > 0 && stack.pieces[0].color === action.player && dist === 1;
+  if (piecesInHand) {
+    let { to: piecesInHandTo } = piecesInHand;
+    return to.row === piecesInHandTo.row && to.col === piecesInHandTo.col;
+  } else {
+    let stack: Stack = board.cells[row][col];
+    let dist = Math.abs(to.row - row) + Math.abs(to.col - col);
+    return piecesGrabbed <= size && stack.pieces.length > 0 && stack.pieces[0].color === action.player && dist === 1;
+  }
 };
 
-export const applyAction = (board: Board, action: Action): Board => {
+export const applyAction = (board: Board, action: Action, piecesInHand: PiecesInHand = null): ActionResult => {
   switch (action.type) {
     case ActionType.drop:
       return applyDropAction(board, action);
     case ActionType.move:
-      return applyMoveAction(board, action);
+      return applyMoveAction(board, action, piecesInHand);
     default:
-      return board;
+      return { board };
   }
 };
 
-const applyDropAction = (board: Board, action: Action): Board => {
+const applyDropAction = (board: Board, action: Action): ActionResult => {
   const { row, col, data } = action;
   const { piece } = data as DropActionData;
   const stack: Stack = board.cells[row][col];
 
   return {
-    ...board,
-    cells: replaceCell(board, row, col, {
-      pieces: [
-        piece,
-        ...stack.pieces
-      ]
-    })
+    board: {
+      ...board,
+      cells: replaceCell(board, row, col, {
+        pieces: [
+          piece,
+          ...stack.pieces
+        ]
+      })
+    }
   };
 };
 
-const applyMoveAction = (board: Board, action: Action): Board => {
+const applyMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHand): ActionResult => {
   const { row, col, data } = action;
-  const { pieces, to } = data as MoveActionData;
-  const stack: Stack = board.cells[row][col];
+  let { piecesGrabbed, to } = data as MoveActionData;
+  const { piecesToDrop } = to;
+  let movePieces: Piece[];
+  let newBoard: Board;
+  let stack: Stack;
 
-  let movePieces = stack.pieces.slice(0, pieces);
+  if (piecesInHand) {
+    piecesGrabbed = piecesInHand.stack.pieces.length;
+    movePieces = piecesInHand.stack.pieces;
+  } else {
+    stack = board.cells[row][col];
+    movePieces = stack.pieces.slice(0, piecesGrabbed);
+  }
 
-  let newBoard = {
-    ...board,
-    cells: replaceCell(board, row, col, {
-      pieces: stack.pieces.slice(pieces)
-    })
+  let newPiecesInHand = {
+    stack: {
+      pieces: movePieces.slice(0, piecesGrabbed - piecesToDrop)
+    },
+    to: {
+      row: to.row + (to.row - row),
+      col: to.col + (to.col - col)
+    }
   };
 
+  if (newPiecesInHand.stack.pieces.length === 0) {
+    newPiecesInHand = null;
+  }
+
+  let piecesDropped = movePieces.slice(piecesGrabbed - piecesToDrop);
+
+  if (piecesInHand) {
+    newBoard = board;
+  } else {
+    newBoard = {
+      ...board,
+      cells: replaceCell(board, row, col, {
+        pieces: stack.pieces.slice(piecesGrabbed)
+      })
+    };
+  }
+
   return {
-    ...newBoard,
-    cells: replaceCell(newBoard, to.row, to.col, {
-      pieces: [
-        ...movePieces,
-        ...board.cells[to.row][to.col].pieces
-      ]
-    })
+    piecesInHand: newPiecesInHand,
+    board: {
+      ...newBoard,
+      cells: replaceCell(newBoard, to.row, to.col, {
+        pieces: [
+          ...piecesDropped,
+          ...board.cells[to.row][to.col].pieces
+        ]
+      })
+    }
   };
 };
 
@@ -152,7 +193,7 @@ export const boardToText = (board: Board): string => {
 
       return stack.pieces.map(piece => {
         const { color, type } = piece;
-        let colorStr = color === Player.white ? 'W' : 'B';
+        let colorStr = color === PlayerColor.white ? 'W' : 'B';
         let typeStr = type === PieceType.flat ? 'F' : 'S';
         return `${colorStr}${typeStr}`;
       }).join("|");
@@ -177,7 +218,7 @@ export const boardFromText = (strings, ...values): Board => {
         const [, colorStr, typeStr] = pieceStr.match(/(\w)(\w)/);
 
         return {
-          color: colorStr === 'W' ? Player.white : Player.black,
+          color: colorStr === 'W' ? PlayerColor.white : PlayerColor.black,
           type: typeStr === 'F' ? PieceType.flat : PieceType.standing
         };
       });

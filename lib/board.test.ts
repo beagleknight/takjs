@@ -1,7 +1,8 @@
 import test from 'ava';
 
 import { PieceType } from './piece';
-import { Player, ActionType } from './action';
+import { PlayerColor } from './player';
+import { ActionType } from './action';
 import { createBoard, boardStr, boardToText, boardFromText, isValidAction, applyAction } from './board';
 
 test("createBoard returns an empty board of the give size", t => {
@@ -38,13 +39,13 @@ test("isValidAction when type is 'drop' is true if the stack is empty", t => {
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.drop,
       row: 0,
       col: 0,
       data: {
         piece: {
-          color: Player.white,
+          color: PlayerColor.white,
           type: PieceType.flat
         }
       }
@@ -61,13 +62,13 @@ test("isValidAction when type is 'drop' is false if the stack is not empty", t =
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.drop,
       row: 0,
       col: 0,
       data: {
         piece: {
-          color: Player.white,
+          color: PlayerColor.white,
           type: PieceType.flat
         }
       }
@@ -77,20 +78,20 @@ test("isValidAction when type is 'drop' is false if the stack is not empty", t =
   t.falsy(isValid);
 });
 
-test("isValidAction when type is 'drop' is false if the dropped piece is not from the player's", t => {
+test("isValidAction when type is 'drop' is false if the dropped piece is not from the PlayerColor's", t => {
   const isValid = isValidAction(
     boardFromText`
       E,E,E
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.drop,
       row: 0,
       col: 0,
       data: {
         piece: {
-          color: Player.black,
+          color: PlayerColor.black,
           type: PieceType.flat
         }
       }
@@ -107,15 +108,16 @@ test("isValidAction when type is 'move' is false if the stack is empty", t => {
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.move,
       row: 0,
       col: 0,
       data: {
-        pieces: 1,
+        piecesGrabbed: 1,
         to: {
           row: 0,
-          col: 1
+          col: 1,
+          piecesToDrop: 1
         }
       }
     }
@@ -124,22 +126,23 @@ test("isValidAction when type is 'move' is false if the stack is empty", t => {
   t.falsy(isValid);
 });
 
-test("isValidAction when type is 'move' is false if the stack's top piece is not from the player", t => {
+test("isValidAction when type is 'move' is false if the stack's top piece is not from the PlayerColor", t => {
   const isValid = isValidAction(
     boardFromText`
       BF,E,E
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.move,
       row: 0,
       col: 0,
       data: {
-        pieces: 1,
+        piecesGrabbed: 1,
         to: {
           row: 0,
-          col: 1
+          col: 1,
+          piecesToDrop: 1
         }
       }
     }
@@ -155,15 +158,16 @@ test("isValidAction when type is 'move' is false if to cell is the same origin c
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.move,
       row: 0,
       col: 0,
       data: {
-        pieces: 1,
+        piecesGrabbed: 1,
         to: {
           row: 0,
-          col: 0
+          col: 0,
+          piecesToDrop: 1
         }
       }
     }
@@ -179,16 +183,72 @@ test("isValidAction when type is 'move' is false if to cell is not orthogonal", 
       E,E,E
       E,E,E
     `, {
-      player: Player.white,
+      player: PlayerColor.white,
       type: ActionType.move,
       row: 0,
       col: 0,
       data: {
-        pieces: 1,
+        piecesGrabbed: 1,
         to: {
           row: 1,
-          col: 1
+          col: 1,
+          piecesToDrop: 1
         }
+      }
+    }
+  );
+
+  t.falsy(isValid);
+});
+
+test("isValidAction when type is 'move' is false if 'piecesGrabbed' is greater than board's size", t => {
+  const isValid = isValidAction(
+    boardFromText`
+      WF|WF|WF|WF,E,E
+      E,E,E
+      E,E,E
+    `, {
+      player: PlayerColor.white,
+      type: ActionType.move,
+      row: 0,
+      col: 0,
+      data: {
+        piecesGrabbed: 4,
+        to: {
+          row: 0,
+          col: 1,
+          piecesToDrop: 1
+        }
+      }
+    }
+  );
+
+  t.falsy(isValid);
+});
+
+test("isValidAction when type is 'move' and player has pieces in hand is false if to cell is different than pieces in hand to", t => {
+  const isValid = isValidAction(
+    boardFromText`
+      WF|WF,WF,E
+      E,E,E
+      E,E,E
+    `, {
+      player: PlayerColor.white,
+      type: ActionType.move,
+      data: {
+        to: {
+          row: 0,
+          col: 2,
+          piecesToDrop: 1
+        }
+      }
+    }, {
+      stack: {
+        pieces: [{ color: PlayerColor.white, type: PieceType.flat }],
+      },
+      to: {
+        row: 0,
+        col: 1
       }
     }
   );
@@ -202,14 +262,14 @@ test("applyAction when type is 'drop' modify the board", t => {
     E,E,E
     E,E,E
   `;
-  const newBoard = applyAction(currentBoard, {
-    player: Player.white,
+  const { board: newBoard } = applyAction(currentBoard, {
+    player: PlayerColor.white,
     type: ActionType.drop,
     row: 1,
     col: 1,
     data: {
       piece: {
-        color: Player.white,
+        color: PlayerColor.white,
         type: PieceType.flat
       }
     }
@@ -222,30 +282,75 @@ test("applyAction when type is 'drop' modify the board", t => {
   `, boardToText(newBoard));
 });
 
-test("applyAction when type is 'move' modify the board", t => {
+test("applyAction when type is 'move' modify the board and the player", t => {
   const currentBoard = boardFromText`
-    WF,BF,E
+    WF|WF|WF,BF,E
     E,E,E
     E,E,E
   `;
-  const newBoard = applyAction(currentBoard, {
-    player: Player.white,
+  const { board: newBoard, piecesInHand } = applyAction(currentBoard, {
+    player: PlayerColor.white,
     type: ActionType.move,
     row: 0,
     col: 0,
     data: {
-      pieces: 1,
+      piecesGrabbed: 2,
       to: {
         row: 0,
-        col: 1
+        col: 1,
+        piecesToDrop: 1
       }
     }
   });
 
   t.is(boardStr`
-    E,WF|BF,E
+    WF,WF|BF,E
     E,E,E
     E,E,E
   `, boardToText(newBoard));
+
+  t.deepEqual(piecesInHand, {
+    stack: {
+      pieces: [{ color: PlayerColor.white, type: PieceType.flat }]
+    },
+    to: {
+      row: 0,
+      col: 2
+    }
+  });
 });
 
+test("applyAction when type is 'move' and using pieces in hand modify the board and the player", t => {
+  const currentBoard = boardFromText`
+    WF,WF|BF,E
+    E,E,E
+    E,E,E
+  `;
+  const { board: newBoard, piecesInHand: newPiecesInHand } = applyAction(currentBoard, {
+    player: PlayerColor.white,
+    type: ActionType.move,
+    data: {
+      to: {
+        row: 0,
+        col: 2,
+        piecesToDrop: 1
+      }
+    }
+  }, {
+    stack: {
+      pieces: [{ color: PlayerColor.white, type: PieceType.flat }]
+    },
+    to: {
+      row: 0,
+      col: 2
+    }
+  });
+
+  t.is(boardStr`
+    WF,WF|BF,WF
+    E,E,E
+    E,E,E
+  `, boardToText(newBoard));
+
+  t.deepEqual(newPiecesInHand, null);
+});

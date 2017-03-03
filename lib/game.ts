@@ -1,8 +1,10 @@
 import { Board } from './board';
 
-import { Player } from './action';
+import { Player, PlayerColor } from './player';
 
 export interface Game {
-    turn: Player;
+    turn: PlayerColor;
     board: Board;
+    whitePlayer: Player;
+    blackPlayer: Player;
 }
