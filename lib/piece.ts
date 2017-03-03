@@ -16,5 +16,5 @@ export interface PiecesInHand {
   to: {
     row: number;
     col: number;
-  }
+  };
 }
