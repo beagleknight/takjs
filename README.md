@@ -22,7 +22,10 @@ Contributions are welcome and appreciated. You can find TakJS on GitHub, feel fr
 [https://github.com/beagleknight/takjs](https://github.com/beagleknight/takjs)
 
 
+## Documentation
+
+The documentation for TakJS was generated using Typedoc and it is located in this github [page](https://beagleknight.github.io/takjs/index.html).
+
 ## License
 
-Copyright (c) 2017 [DavidMorcillo](http://twitter.com/beagleknight).<br />
-Licensed under the Apache License 2.0.
+MIT
