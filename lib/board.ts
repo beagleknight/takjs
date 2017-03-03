@@ -22,17 +22,20 @@ export const isValidAction = (board: Board, action: Action): boolean => {
 };
 
 const isValidDropAction = (board: Board, action: Action): boolean => {
-  let { row, col } = action;
+  let { row, col, data } = action;
+  let { piece } = data as DropActionData;
   let stack: Stack = board.cells[row][col];
 
-  return stack.pieces.length === 0;
+  return stack.pieces.length === 0 && action.player === piece.color;
 };
 
 const isValidMoveAction = (board: Board, action: Action): boolean => {
-  let { row, col } = action;
+  let { row, col, data } = action;
+  let { to } = data as MoveActionData;
   let stack: Stack = board.cells[row][col];
+  let dist = Math.abs(to.row - row) + Math.abs(to.col - col);
 
-  return stack.pieces.length > 0 && stack.pieces[0].color === action.player;
+  return stack.pieces.length > 0 && stack.pieces[0].color === action.player && dist === 1;
 };
 
 export const applyAction = (board: Board, action: Action): Board => {
@@ -157,10 +160,10 @@ export const boardToText = (board: Board): string => {
   )).join("\n");
 };
 
-export const boardFromText = (str: string): Board => {
+export const boardFromText = (strings, ...values): Board => {
   let cells: Stack[][] = [];
 
-  const rowsStr = str.split("\n");
+  const rowsStr = boardStr(strings, ...values).split("\n");
 
   rowsStr.forEach(rowStr => {
     const row = rowStr.split(",").map(stackStr => {

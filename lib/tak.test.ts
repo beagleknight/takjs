@@ -22,7 +22,7 @@ test("createGame accepts custom size as an argument", t => {
 });
 
 test("createGame accepts a started game as an argument", t => {
-  const startedGameBoard = boardStr`
+  const startedGameBoard = boardFromText `
     E,E,WF,E
     E,BF,E,E
     E,E,E,E
@@ -30,12 +30,12 @@ test("createGame accepts a started game as an argument", t => {
   `;
   const { game$ } = createGame(3, {
     turn: Player.black,
-    board: boardFromText(startedGameBoard)
+    board: startedGameBoard
   });
 
   game$.subscribe(({ turn, board }) => {
     t.is(turn, Player.black);
-    t.is(boardToText(board), startedGameBoard);
+    t.is(board, startedGameBoard);
   });
 });
 
@@ -52,13 +52,13 @@ test("createGame starts with an empty board", t => {
   });
 });
 
-test("white player can drop a piece on a empty space", t => {
+test("a player's action modify the game's board", t => {
   const { game$, nextWhiteMove$ } = createGame();
 
   game$.skip(1).subscribe(({ board }) => {
     t.is(boardToText(board), boardStr`
       E,E,E,E
-      E,E,BF,E
+      E,E,WF,E
       E,E,E,E
       E,E,E,E
     `);
@@ -71,14 +71,14 @@ test("white player can drop a piece on a empty space", t => {
     col: 2,
     data: {
       piece: {
-        color: Player.black,
+        color: Player.white,
         type: PieceType.flat
       }
     }
   });
 });
 
-test("black player cannot start the game", t => {
+test("a player cannot do an action if it's not his turn", t => {
   const { game$, nextBlackMove$ } = createGame();
 
   game$.skip(1).subscribe(({ board }) => {
