@@ -1,4 +1,6 @@
 node_modules
 *.log
 .vscode
-dist
+*.js
+*.js.map
+*.d.ts

@@ -1,9 +1,9 @@
 {
   "name": "takjs",
-  "version": "0.0.2",
+  "version": "0.0.7",
   "description": "A UI-agnostic implementation of the game Tak using Typescript and RxJS",
-  "main": "dist/src/index.js",
-  "typings":  "dist/src/index.d.ts",
+  "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "lint": "tslint src/**/*.ts",
     "prebuild": "yarn run lint",
