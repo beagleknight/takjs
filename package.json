@@ -5,6 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
+    "doc": "typedoc --out doc",
     "lint": "tslint src/**/*.ts",
     "prebuild": "yarn run lint",
     "build": "tsc",
@@ -26,6 +27,7 @@
     "ava": "^0.18.2",
     "inspect-process": "^0.4.2",
     "tslint": "^4.5.1",
+    "typedoc": "^0.5.7",
     "typescript": "^2.2.1"
   },
   "dependencies": {

@@ -5,6 +5,12 @@ import { PlayerColor } from './player';
 import { Action, ActionType } from './action';
 import { Board, isValidAction, createBoard, applyAction } from './board';
 
+/**
+ * Creates a new Tak game.
+ * @param size The size of the board (i.e. 3, 4 or 5).
+ * @param initialGame A initial state of the game.
+ * @returns A `game$` observable to get game state changes, a `nextWhiteAction$` to push white player actions and a `nextBlackAction$` to push black player actions.
+ */
 export const createGame = (size: number = 4, initialGame: Game = null) => {
   const nextWhiteAction$: Subject<Action> = new Subject<Action>();
   const nextBlackAction$: Subject<Action> = new Subject<Action>();
