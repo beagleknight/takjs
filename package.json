@@ -5,7 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "doc": "typedoc --out doc",
+    "doc": "typedoc --out docs",
     "lint": "tslint src/**/*.ts",
     "prebuild": "yarn run lint",
     "build": "tsc",
