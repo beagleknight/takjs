@@ -22,7 +22,7 @@ Coming soon...
 
 ## Examples
 
-Coming soon...
+- [TaKJS-Angular](https://github.com/beagleknight/takjs-angular) - A simple UI example for TakJS using the Angular framework Edit
 
 ## Contributing
 
