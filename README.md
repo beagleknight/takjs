@@ -32,7 +32,7 @@ Contributions are welcome and appreciated. You can find TakJS on GitHub, feel fr
 
 ## Documentation
 
-The documentation for TakJS was generated using Typedoc and it is located in this github [page](https://beagleknight.github.io/takjs/index.html).
+The documentation for TakJS was generated using Typedoc and it is located in this [page](https://takjs-docs.surge.sh).
 
 ## License
 
