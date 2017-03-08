@@ -11,7 +11,7 @@ export interface Board {
   cells: Stack[][];
 }
 
-export const isValidAction = (board: Board, action: Action, piecesInHand: PiecesInHand = null): boolean => {
+export const isValidAction = (board: Board, action: Action, piecesInHand: PiecesInHand | null = null): boolean => {
   switch (action.type) {
     case ActionType.drop:
       return isValidDropAction(board, action);
@@ -30,7 +30,7 @@ const isValidDropAction = (board: Board, action: Action): boolean => {
   return stack.pieces.length === 0 && action.player === piece.color;
 };
 
-const isValidMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHand = null): boolean => {
+const isValidMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHand | null = null): boolean => {
   let { size } = board;
   let { row, col, data } = action;
   let { piecesGrabbed, to } = data as MoveActionData;
@@ -45,14 +45,14 @@ const isValidMoveAction = (board: Board, action: Action, piecesInHand: PiecesInH
   }
 };
 
-export const applyAction = (board: Board, action: Action, piecesInHand: PiecesInHand = null): ActionResult => {
+export const applyAction = (board: Board, action: Action, piecesInHand: PiecesInHand | null = null): ActionResult => {
   switch (action.type) {
     case ActionType.drop:
       return applyDropAction(board, action);
     case ActionType.move:
       return applyMoveAction(board, action, piecesInHand);
     default:
-      return { board };
+      return { piecesInHand: null, board };
   }
 };
 
@@ -62,6 +62,7 @@ const applyDropAction = (board: Board, action: Action): ActionResult => {
   const stack: Stack = board.cells[row][col];
 
   return {
+    piecesInHand: null,
     board: {
       ...board,
       cells: replaceCell(board, row, col, {
@@ -74,7 +75,7 @@ const applyDropAction = (board: Board, action: Action): ActionResult => {
   };
 };
 
-const applyMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHand): ActionResult => {
+const applyMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHand | null): ActionResult => {
   const { row, col, data } = action;
   let { piecesGrabbed, to } = data as MoveActionData;
   const { piecesToDrop } = to;
@@ -85,12 +86,19 @@ const applyMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHan
   if (piecesInHand) {
     piecesGrabbed = piecesInHand.stack.pieces.length;
     movePieces = piecesInHand.stack.pieces;
+    newBoard = board;
   } else {
     stack = board.cells[row][col];
     movePieces = stack.pieces.slice(0, piecesGrabbed);
+    newBoard = {
+      ...board,
+      cells: replaceCell(board, row, col, {
+        pieces: stack.pieces.slice(piecesGrabbed)
+      })
+    };
   }
 
-  let newPiecesInHand = {
+  let newPiecesInHand: PiecesInHand | null = {
     stack: {
       pieces: movePieces.slice(0, piecesGrabbed - piecesToDrop)
     },
@@ -105,17 +113,6 @@ const applyMoveAction = (board: Board, action: Action, piecesInHand: PiecesInHan
   }
 
   let piecesDropped = movePieces.slice(piecesGrabbed - piecesToDrop);
-
-  if (piecesInHand) {
-    newBoard = board;
-  } else {
-    newBoard = {
-      ...board,
-      cells: replaceCell(board, row, col, {
-        pieces: stack.pieces.slice(piecesGrabbed)
-      })
-    };
-  }
 
   return {
     piecesInHand: newPiecesInHand,
@@ -145,7 +142,7 @@ const replaceCell = (board: Board, row: number, col: number, stack: Stack) => {
   ];
 };
 
-export const createBoard = (size): Board => {
+export const createBoard = (size: number): Board => {
   let cells: Stack[][] = [];
 
   for(let i = 0; i < size; i += 1) {
@@ -164,7 +161,7 @@ export const createBoard = (size): Board => {
   };
 };
 
-export const boardStr = (strings, ...values) => {
+export const boardStr = (strings: TemplateStringsArray, ...values: string[]) => {
   // Interweave the strings with the
   // substitution vars first.
   let output = '';
@@ -201,7 +198,7 @@ export const boardToText = (board: Board): string => {
   )).join("\n");
 };
 
-export const boardFromText = (strings, ...values): Board => {
+export const boardFromText = (strings: TemplateStringsArray, ...values: string[]): Board => {
   let cells: Stack[][] = [];
 
   const rowsStr = boardStr(strings, ...values).split("\n");
@@ -215,7 +212,7 @@ export const boardFromText = (strings, ...values): Board => {
       }
 
       const pieces = stackStr.split("|").map(pieceStr => {
-        const [, colorStr, typeStr] = pieceStr.match(/(\w)(\w)/);
+        const [, colorStr, typeStr] = pieceStr.match(/(\w)(\w)/) as string[];
 
         return {
           color: colorStr === 'W' ? PlayerColor.white : PlayerColor.black,

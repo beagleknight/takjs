@@ -12,7 +12,7 @@ export interface DropActionData {
 }
 
 export interface MoveActionData {
-  piecesGrabbed?: number;
+  piecesGrabbed: number;
   to: {
     row: number;
     col: number;
@@ -23,12 +23,12 @@ export interface MoveActionData {
 export interface Action {
   player: PlayerColor;
   type: ActionType;
-  row?: number;
-  col?: number;
+  row: number;
+  col: number;
   data: DropActionData | MoveActionData;
 }
 
 export interface ActionResult {
   board: Board;
-  piecesInHand?: PiecesInHand;
+  piecesInHand: PiecesInHand | null;
 }

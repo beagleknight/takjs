@@ -199,7 +199,10 @@ test("a player's move action change the game's turn if current player doesn't ha
   nextWhiteAction$.next({
     player: PlayerColor.white,
     type: ActionType.move,
+    row: 1,
+    col: 1,
     data: {
+      piecesGrabbed: 0,
       to: {
         row: 1,
         col: 2,

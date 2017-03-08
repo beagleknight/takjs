@@ -235,7 +235,10 @@ test("isValidAction when type is 'move' and player has pieces in hand is false i
     `, {
       player: PlayerColor.white,
       type: ActionType.move,
+      row: 0,
+      col: 1,
       data: {
+        piecesGrabbed: 0,
         to: {
           row: 0,
           col: 2,
@@ -329,7 +332,10 @@ test("applyAction when type is 'move' and using pieces in hand modify the board 
   const { board: newBoard, piecesInHand: newPiecesInHand } = applyAction(currentBoard, {
     player: PlayerColor.white,
     type: ActionType.move,
+    row: 0,
+    col: 1,
     data: {
+      piecesGrabbed: 0,
       to: {
         row: 0,
         col: 2,

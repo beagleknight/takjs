@@ -11,7 +11,7 @@ import { Board, isValidAction, createBoard, applyAction } from './board';
  * @param initialGame A initial state of the game.
  * @returns A `game$` observable to get game state changes, a `nextWhiteAction$` to push white player actions and a `nextBlackAction$` to push black player actions.
  */
-export const createGame = (size: number = 4, initialGame: Game = null) => {
+export const createGame = (size: number = 4, initialGame?: Game) => {
   const nextWhiteAction$: Subject<Action> = new Subject<Action>();
   const nextBlackAction$: Subject<Action> = new Subject<Action>();
 
@@ -21,8 +21,8 @@ export const createGame = (size: number = 4, initialGame: Game = null) => {
     turn: PlayerColor.white,
     board: initialBoard,
     whitePlayer: {
-      color: PlayerColor.white,
-      piecesInHand: null
+    color: PlayerColor.white,
+    piecesInHand: null
     },
     blackPlayer: {
       color: PlayerColor.black,

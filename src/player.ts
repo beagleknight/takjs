@@ -7,5 +7,5 @@ export enum PlayerColor {
 
 export interface Player {
   color: PlayerColor;
-  piecesInHand: PiecesInHand;
+  piecesInHand: PiecesInHand | null;
 }
