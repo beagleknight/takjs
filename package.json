@@ -20,7 +20,7 @@
     "*.d.ts"
   ],
   "author": "David Morcillo Muñoz <david.morcillo@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/core-js": "^0.9.35",
     "ava": "^0.18.2",
